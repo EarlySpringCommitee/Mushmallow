@@ -1,31 +1,54 @@
-export interface ID {
+import { ApiProperty } from '@nestjs/swagger';
+import { Type } from '@nestjs/common';
+
+export class ID {
+    @ApiProperty()
     module: string;
-    id: string | number;
+
+    @ApiProperty()
+    id: string;
 }
 
-export interface Artist {
+export class Artist {
+    @ApiProperty()
     id: ID;
+
+    @ApiProperty()
     name: string;
+
+    @ApiProperty()
     image?: string;
 }
 
-export interface Album {
+export class Album {
+    @ApiProperty()
     id: ID;
+
+    @ApiProperty()
     name: string;
+
+    @ApiProperty()
     image?: string;
 }
 
-export interface Music {
+export class Music {
+    @ApiProperty()
     id: ID;
+
+    @ApiProperty()
     name: string;
+
+    @ApiProperty()
     artist?: Artist[];
+
+    @ApiProperty()
     album?: Album;
 }
 
 export enum Quality {
-    LOW,
-    MEDIUM,
-    HIGH,
-    VERY_HIGH,
-    ORIGINAL
+    LOW = 'LOW',
+    MEDIUM = 'MEDIUM',
+    HIGH = 'HIGH',
+    VERY_HIGH = 'VERY_HIGH',
+    ORIGINAL = 'ORIGINAL'
 }

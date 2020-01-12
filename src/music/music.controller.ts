@@ -1,6 +1,15 @@
-import { Controller, Get, Param, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Param, Query, Res, HttpStatus } from '@nestjs/common';
+import { ApiResponse, ApiNotFoundResponse, ApiQuery } from '@nestjs/swagger';
 
-import { ID } from './music.type';
+import { ID, Quality } from './music.type';
+import {
+    LoginResult,
+    ILoginService,
+    IMusicService,
+    MusicResult,
+    MusicResultStatus,
+    URLResult
+} from 'src/music/modules.type';
 import { ModulesService } from './modules.service';
 
 import { Response } from 'express';
@@ -9,25 +18,41 @@ import { Response } from 'express';
 export class MusicController {
     constructor(private readonly modulesService: ModulesService) {}
 
-    @Get('info/:moduleName/:id')
-    async getMusicInfo(@Param() params) {
+    @Get('info')
+    @ApiQuery({ name: 'module', type: String })
+    @ApiQuery({ name: 'id', type: String })
+    @ApiResponse({
+        status: 200,
+        description: 'Found.',
+        type: MusicResult
+    })
+    @ApiNotFoundResponse({
+        description: 'Not found.',
+        type: MusicResult
+    })
+    async getMusicInfo(@Query() query) {
         const id: ID = {
-            module: params.moduleName,
-            id: params.id
+            module: query.module,
+            id: query.id
         };
 
         const music = await this.modulesService.getMusic(id);
         return music;
     }
 
-    @Get('url/:moduleName/:id/:quality')
-    async getMusicURL(@Param() params, @Res() res: Response) {
+    @Get('url')
+    @ApiQuery({ name: 'quality', enum: Quality })
+    @ApiQuery({ name: 'id', type: String })
+    @ApiQuery({ name: 'module', type: String })
+    @ApiResponse({ status: 301, description: 'URL Found.' })
+    @ApiNotFoundResponse({ description: 'Not Found.', type: URLResult })
+    async getMusicURL(@Query() query, @Res() res: Response) {
         const id: ID = {
-            module: params.moduleName,
-            id: params.id
+            module: query.module,
+            id: query.id
         };
 
-        const quality = parseInt(params.quality);
+        const quality: Quality = query.quality;
 
         const url = await this.modulesService.getMusicURL(id, quality);
 

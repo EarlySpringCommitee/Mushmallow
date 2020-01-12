@@ -80,7 +80,7 @@ export class NeteaseService
             image: song.al.picUrl
         };
 
-        const artist: Artist[] = song.ar.map(ar => ({
+        const artist: Artist[] = song.ar.map((ar: { id: number; name: string }) => ({
             id: {
                 module: MODULE_NAME,
                 id: ar.id
@@ -106,6 +106,7 @@ export class NeteaseService
     }
 
     async getMusicURL(id: ID, quality: Quality): Promise<URLResult> {
+        quality = quality in Quality ? quality : Quality.ORIGINAL;
         const br = NQuality[Quality[quality]];
         try {
             const result = (await rp(`${this.baseURL}/song/url?id=${id.id}&br=${br}`)).data[0];
