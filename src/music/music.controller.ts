@@ -1,15 +1,8 @@
-import { Controller, Get, Param, Query, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Query, Res, HttpStatus } from '@nestjs/common';
 import { ApiResponse, ApiNotFoundResponse, ApiQuery } from '@nestjs/swagger';
 
 import { ID, Quality } from './music.type';
-import {
-    LoginResult,
-    ILoginService,
-    IMusicService,
-    MusicResult,
-    MusicResultStatus,
-    URLResult
-} from 'src/music/modules.type';
+import { MusicResult, URLResult } from 'src/music/modules.type';
 import { ModulesService } from './modules.service';
 
 import { Response } from 'express';
