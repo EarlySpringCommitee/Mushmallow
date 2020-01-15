@@ -18,3 +18,13 @@ export class User implements PublicUser {
     @Column()
     password: string;
 }
+
+export interface UpdateUser {
+    username?: string;
+    password?: string;
+}
+
+export interface InsertUser {
+    username: string;
+    password: string;
+}

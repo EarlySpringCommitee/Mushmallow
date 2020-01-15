@@ -17,7 +17,7 @@ import { User } from './users/user.entity';
             password: process.env.DB_PASSWORD || 'root',
             database: process.env.DB_DATABASE || 'mushmallow',
             entities: [User],
-            synchronize: process.env.DEBUG == '1'
+            synchronize: true
         }),
         MusicModule,
         AuthModule,
