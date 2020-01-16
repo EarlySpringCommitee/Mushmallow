@@ -1,5 +1,4 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
-import { v4 as uuid } from 'uuid';
 
 export interface PublicUser {
     id: string;
