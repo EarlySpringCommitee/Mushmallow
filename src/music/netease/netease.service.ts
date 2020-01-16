@@ -13,8 +13,8 @@ import {
     MusicResult,
     MusicResultStatus,
     URLResult
-} from 'src/music/modules.type';
-import { Music, ID, Quality, Album, Artist } from 'src/music/music.type';
+} from '../modules.type';
+import { Music, ID, Quality, Album, Artist } from '../music.type';
 
 interface NeteasePhoneLoginInfo {
     phone: String;
@@ -54,7 +54,7 @@ export class NeteaseService
         this.loginResult = result;
 
         return {
-            success: result.code == 200,
+            success: result.code === 200,
             message: result
         };
     }

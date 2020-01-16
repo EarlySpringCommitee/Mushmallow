@@ -8,6 +8,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/user.entity';
 import { LyricService } from './lyric/lyric.service';
 import { LyricModule } from './lyric/lyric.module';
+import { PlaylistService } from './playlist/playlist.service';
+import { PlaylistModule } from './playlist/playlist.module';
 
 @Module({
     imports: [
@@ -24,9 +26,10 @@ import { LyricModule } from './lyric/lyric.module';
         MusicModule,
         AuthModule,
         UsersModule,
-        LyricModule
+        LyricModule,
+        PlaylistModule
     ],
     controllers: [AppController],
-    providers: [AppService, LyricService]
+    providers: [AppService, LyricService, PlaylistService]
 })
 export class AppModule {}
