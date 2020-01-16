@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
 
 import { UsersService } from '../users/users.service';
-import { User, PublicUser } from '../users/user.entity';
+import { User, PublicUser, InsertUser } from '../users/user.entity';
 export { PublicUser } from '../users/user.entity';
+import { CreateUserResultStatus, CreateUserResult, UpdateUserResult } from './auth.type';
 
 import { JwtService } from '@nestjs/jwt';
 
@@ -29,12 +30,12 @@ export class AuthService {
         username: User['username'],
         oldPassword: User['password'],
         newPassword: User['password']
-    ): Promise<boolean> {
+    ): Promise<UpdateUserResult> {
         if (await this.validateUser(username, oldPassword)) {
             const result = await this.usersService.update(username, { password: newPassword });
-            return result === 1;
+            return { success: result };
         } else {
-            return false;
+            return { success: false };
         }
     }
 
@@ -43,5 +44,32 @@ export class AuthService {
         return {
             access_token: this.jwtService.sign(payload)
         };
+    }
+
+    async createUser(user: InsertUser): Promise<CreateUserResult> {
+        const usernameExist: boolean = Boolean(await this.usersService.findOne(user.username));
+        if (usernameExist) {
+            return {
+                success: false,
+                status: CreateUserResultStatus.USERNAME_EXIST
+            };
+        }
+        const result = await this.usersService.create(user);
+        if (result) {
+            return {
+                success: true,
+                status: CreateUserResultStatus.OK,
+                id: result
+            };
+        } else {
+            return {
+                success: false,
+                status: CreateUserResultStatus.UNKNOWN_ERROR
+            };
+        }
+    }
+
+    async isUsernameExist(username: User['username']): Promise<boolean> {
+        return Boolean(await this.usersService.findOne(username));
     }
 }

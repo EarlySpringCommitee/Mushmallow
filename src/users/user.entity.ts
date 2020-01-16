@@ -1,14 +1,14 @@
 import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 
 export interface PublicUser {
-    id: number;
+    id: string;
     username: string;
 }
 
 @Entity()
 export class User implements PublicUser {
-    @PrimaryGeneratedColumn()
-    id: number;
+    @PrimaryGeneratedColumn('uuid')
+    id: string;
 
     @Column({
         unique: true

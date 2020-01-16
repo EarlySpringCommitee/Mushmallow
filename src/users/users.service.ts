@@ -36,9 +36,9 @@ export class UsersService {
         });
     }
 
-    async update(username: User['username'], user: UpdateUser): Promise<number> {
+    async update(username: User['username'], user: UpdateUser): Promise<boolean> {
         const result = await this.userRepository.update({ username }, user);
-        return result.raw.affectedRows;
+        return result.raw.affectedRows === 1;
     }
 
     async create(user: InsertUser): Promise<User['id'] | undefined> {
@@ -52,6 +52,6 @@ export class UsersService {
 
     async delete(username: User['username']) {
         const result = await this.userRepository.delete({ username });
-        return result.affected;
+        return result.affected === 1;
     }
 }
