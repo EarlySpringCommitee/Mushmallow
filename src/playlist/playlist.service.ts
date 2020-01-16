@@ -5,13 +5,20 @@ import {
     PlaylistResultStatus,
     IPlaylistService,
     PlaylistSaveResult,
-    PlaylistSaveResultStatus
+    PlaylistSaveResultStatus,
+    PlaylistCreateResultStatus,
+    PlaylistCreateResult,
+    PlaylistDeleteResult,
+    PlaylistDeleteResultStatus
 } from './modules.type';
 import { ID, Playlist } from './playlist.type';
 
 /* Service */
 import { NeteaseService } from './netease/netease.service';
-type Provider = NeteaseService;
+
+import { LocalService } from './local/local.service';
+
+type Provider = IPlaylistService;
 interface ModuleList {
     [moduleName: string]: Provider;
 }
@@ -35,13 +42,19 @@ function initNetease() {
     }
 }
 
+function initLocal() {
+    this.modules.local = this.localService;
+}
+
 @Injectable()
 export class PlaylistService implements IPlaylistService {
     public modules: ModuleList = {};
 
-    constructor() {
+    constructor(private readonly localService: LocalService) {
         /* Init Services */
-        initNetease.bind(this)();
+        for (const f of [initNetease, initLocal]) {
+            f.bind(this)();
+        }
     }
 
     async getPlaylist(id: ID): Promise<PlaylistResult> {
@@ -91,6 +104,46 @@ export class PlaylistService implements IPlaylistService {
             };
         }
         const result = await module.delete(song, playlist);
+        return result;
+    }
+
+    async createPlaylist(playlist: any): Promise<PlaylistCreateResult> {
+        if (!this.modules.hasOwnProperty(playlist.module)) {
+            return {
+                success: false,
+                status: PlaylistCreateResultStatus.MODULE_NOT_FOUND
+            };
+        }
+
+        const module = this.modules[playlist.module];
+        if (typeof module.createPlaylist !== 'function') {
+            return {
+                success: false,
+                status: PlaylistCreateResultStatus.MODULE_NOT_SUPPORTED
+            };
+        }
+
+        const result = await module.createPlaylist(playlist);
+        return result;
+    }
+
+    async deletePlaylist(id: ID): Promise<PlaylistDeleteResult> {
+        if (!this.modules.hasOwnProperty(id.module)) {
+            return {
+                success: false,
+                status: PlaylistDeleteResultStatus.MODULE_NOT_FOUND
+            };
+        }
+
+        const module = this.modules[id.module];
+        if (typeof module.deletePlaylist !== 'function') {
+            return {
+                success: false,
+                status: PlaylistDeleteResultStatus.MODULE_NOT_SUPPORTED
+            };
+        }
+
+        const result = await module.deletePlaylist(id);
         return result;
     }
 }

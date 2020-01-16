@@ -70,7 +70,11 @@ export class NeteaseService
             );
             return {
                 success: true,
-                playlist: IDs,
+                playlist: {
+                    module: MODULE_NAME,
+                    data: IDs,
+                    name: playlist.playlist.name
+                },
                 status: PlaylistResultStatus.OK
             };
         } catch (e) {
@@ -132,11 +136,12 @@ export class NeteaseService
                         status: PlaylistSaveResultStatus.MUSIC_NOT_SUPPORTED
                     };
                     break;
+                default:
+                    return {
+                        success: false,
+                        status: PlaylistSaveResultStatus.UNKNOWN_ERROR
+                    };
             }
-            return {
-                success: false,
-                status: PlaylistSaveResultStatus.UNKNOWN
-            };
         }
     }
 

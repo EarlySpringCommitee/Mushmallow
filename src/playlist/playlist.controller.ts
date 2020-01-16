@@ -1,5 +1,15 @@
 import { AuthGuard } from '@nestjs/passport';
-import { Controller, Get, Query, UseGuards, Patch, Body, Delete } from '@nestjs/common';
+import {
+    Controller,
+    Get,
+    Query,
+    UseGuards,
+    Patch,
+    Body,
+    Delete,
+    Post,
+    Request
+} from '@nestjs/common';
 import { ApiResponse, ApiNotFoundResponse, ApiQuery } from '@nestjs/swagger';
 
 import { PlaylistService } from './playlist.service';
@@ -33,7 +43,27 @@ export class PlaylistController {
         return playlist;
     }
 
-    @Patch()
+    @Post()
+    @UseGuards(AuthGuard('jwt'))
+    async createPlaylist(@Body() body, @Request() req) {
+        const data = body;
+        data.creator = req.user.id;
+        const playlist = await this.playlistService.createPlaylist(body);
+        return playlist;
+    }
+
+    @Delete()
+    @UseGuards(AuthGuard('jwt'))
+    async deletePlaylist(@Body() body) {
+        const id: ID = {
+            id: body.id,
+            module: body.module
+        };
+        const playlist = await this.playlistService.deletePlaylist(id);
+        return playlist;
+    }
+
+    @Patch('record')
     @UseGuards(AuthGuard('jwt'))
     async save(@Body() body) {
         const song: ID = body.song;
@@ -43,7 +73,7 @@ export class PlaylistController {
         return result;
     }
 
-    @Delete()
+    @Delete('record')
     @UseGuards(AuthGuard('jwt'))
     async delete(@Body() body) {
         const song: ID = body.song;

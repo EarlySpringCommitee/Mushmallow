@@ -1,4 +1,6 @@
-import { Controller, Get, UseGuards, Post, Request, Patch, Body } from '@nestjs/common';
+import { Controller, Get, UseGuards, Post, Request, Patch, Body, Query } from '@nestjs/common';
+import { ApiResponse, ApiNotFoundResponse, ApiQuery } from '@nestjs/swagger';
+
 import { AppService } from './app.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth/auth.service';
@@ -19,6 +21,19 @@ export class AppController {
     @Post('auth/login')
     async login(@Request() req) {
         return await this.authService.login(req.user);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Post('auth/user')
+    async createUser(@Body() body) {
+        return await this.authService.createUser(body);
+    }
+
+    @UseGuards(AuthGuard('jwt'))
+    @Get('auth/user')
+    @ApiQuery({ name: 'username', type: String })
+    async isUsernameExist(@Query() query) {
+        return await this.authService.isUsernameExist(query.username);
     }
 
     @UseGuards(AuthGuard('jwt'))
