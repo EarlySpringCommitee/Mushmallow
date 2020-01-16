@@ -10,28 +10,32 @@ interface ModuleList {
     [moduleName: string]: Provider;
 }
 
+function initNetease() {
+    if (process.env.NETEASE_ENABLED === '1') {
+        const baseURL = process.env.NETEASE_BASEURL;
+        this.modules.netease = new NeteaseService(baseURL);
+
+        if (process.env.NETEASE_PHONE) {
+            this.modules.netease.login({
+                phone: process.env.NETEASE_PHONE,
+                password: process.env.NETEASE_PASSWORD
+            });
+        } else if (process.env.NETEASE_EMAIL) {
+            this.modules.netease.login({
+                email: process.env.NETEASE_EMAIL,
+                password: process.env.NETEASE_PASSWORD
+            });
+        }
+    }
+}
+
 @Injectable()
-export class ModulesService implements IMusicService {
+export class MusicService implements IMusicService {
     public modules: ModuleList = {};
 
     constructor() {
         /* Init Services */
-        if (process.env.NETEASE_ENABLED === '1') {
-            const baseURL = process.env.NETEASE_BASEURL;
-            this.modules.netease = new NeteaseService(baseURL);
-
-            if (process.env.NETEASE_PHONE) {
-                this.modules.netease.login({
-                    phone: process.env.NETEASE_PHONE,
-                    password: process.env.NETEASE_PASSWORD
-                });
-            } else if (process.env.NETEASE_EMAIL) {
-                this.modules.netease.login({
-                    email: process.env.NETEASE_EMAIL,
-                    password: process.env.NETEASE_PASSWORD
-                });
-            }
-        }
+        initNetease.bind(this)();
     }
 
     async isMusicAvailable(id: ID): Promise<boolean> {

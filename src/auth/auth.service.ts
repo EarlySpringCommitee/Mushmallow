@@ -5,7 +5,6 @@ import { User, PublicUser } from '../users/user.entity';
 export { PublicUser } from '../users/user.entity';
 
 import { JwtService } from '@nestjs/jwt';
-import { validate } from '@babel/types';
 
 @Injectable()
 export class AuthService {

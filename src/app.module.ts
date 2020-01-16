@@ -6,6 +6,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/user.entity';
+import { LyricService } from './lyric/lyric.service';
+import { LyricModule } from './lyric/lyric.module';
 
 @Module({
     imports: [
@@ -21,9 +23,10 @@ import { User } from './users/user.entity';
         }),
         MusicModule,
         AuthModule,
-        UsersModule
+        UsersModule,
+        LyricModule
     ],
     controllers: [AppController],
-    providers: [AppService]
+    providers: [AppService, LyricService]
 })
 export class AppModule {}

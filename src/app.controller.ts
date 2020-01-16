@@ -18,13 +18,13 @@ export class AppController {
     @UseGuards(AuthGuard('local'))
     @Post('auth/login')
     async login(@Request() req) {
-        return this.authService.login(req.user);
+        return await this.authService.login(req.user);
     }
 
     @UseGuards(AuthGuard('jwt'))
     @Patch('auth/password')
     async changePassword(@Body() body) {
-        return this.authService.changeUserPassword(
+        return await this.authService.changeUserPassword(
             body.username,
             body.oldPassword,
             body.newPassword
