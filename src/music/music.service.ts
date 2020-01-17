@@ -1,6 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
-import { MusicResult, MusicResultStatus, IMusicService, URLResult } from './modules.type';
+import {
+    MusicResult,
+    MusicResultStatus,
+    IMusicService,
+    URLResult,
+    MusicsResult,
+    MusicsResultStatus
+} from './modules.type';
 import { ID, Quality } from './music.type';
 
 /* Service */
@@ -78,5 +85,17 @@ export class MusicService implements IMusicService {
         }
 
         return await module.getMusicURL(id, quality);
+    }
+
+    async searchMusic(moduleName: string, keyword: string): Promise<MusicsResult> {
+        if (!this.modules.hasOwnProperty(moduleName)) {
+            return {
+                success: false,
+                status: MusicsResultStatus.MODULE_NOT_FOUND
+            };
+        }
+
+        const module = this.modules[moduleName];
+        return await module.searchMusic(moduleName, keyword);
     }
 }

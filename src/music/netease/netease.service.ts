@@ -12,7 +12,9 @@ import {
     IMusicService,
     MusicResult,
     MusicResultStatus,
-    URLResult
+    URLResult,
+    MusicsResult,
+    MusicsResultStatus
 } from '../modules.type';
 import { Music, ID, Quality, Album, Artist } from '../music.type';
 
@@ -119,6 +121,56 @@ export class NeteaseService
                 success: false,
                 status: MusicResultStatus.MUSIC_NOT_AVAILABLE
             };
+        }
+    }
+
+    async searchMusic(moduleName: string, keyword: string): Promise<MusicsResult> {
+        try {
+            const result = await rp(`${this.baseURL}/search?keywords=${keyword}`);
+            if (result.code !== 200) throw new Error(MusicsResultStatus.UNKNOWN_ERROR);
+            return {
+                success: true,
+                status: MusicsResultStatus.OK,
+                data: result.result.songs.map((song: any) => {
+                    const album: Album = {
+                        id: {
+                            module: MODULE_NAME,
+                            id: song.album.id
+                        },
+                        name: song.album.name
+                    };
+
+                    const artist: Artist[] = song.artists.map(
+                        (ar: { id: number; name: string }) => ({
+                            id: {
+                                module: MODULE_NAME,
+                                id: ar.id
+                            },
+                            name: ar.name
+                        })
+                    );
+
+                    const music: Music = {
+                        id: {
+                            module: MODULE_NAME,
+                            id: song.id
+                        },
+                        name: song.name,
+                        artist,
+                        album
+                    };
+
+                    return music;
+                })
+            };
+        } catch (e) {
+            switch (e.message) {
+                default:
+                    return {
+                        success: false,
+                        status: MusicsResultStatus.UNKNOWN_ERROR
+                    };
+            }
         }
     }
 }

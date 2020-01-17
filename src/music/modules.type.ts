@@ -43,8 +43,26 @@ export class URLResult {
     status?: MusicResultStatus;
 }
 
+export enum MusicsResultStatus {
+    OK = 'OK',
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+    MODULE_NOT_FOUND = 'MODULE_NOT_FOUND'
+}
+
+export class MusicsResult {
+    @ApiProperty()
+    success: boolean;
+
+    @ApiProperty()
+    data?: Music[];
+
+    @ApiProperty()
+    status?: MusicsResultStatus;
+}
+
 export interface IMusicService {
     getMusic: (id: ID) => Promise<MusicResult>;
-    isMusicAvailable(id: ID): Promise<boolean>;
-    getMusicURL(id: ID, quality: Quality): Promise<URLResult>;
+    isMusicAvailable: (id: ID) => Promise<boolean>;
+    getMusicURL: (id: ID, quality: Quality) => Promise<URLResult>;
+    searchMusic: (moduleName: string, keyword: string) => Promise<MusicsResult>;
 }

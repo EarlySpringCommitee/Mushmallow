@@ -2,7 +2,7 @@ import { Controller, Get, Query, Res, HttpStatus, UseGuards } from '@nestjs/comm
 import { ApiResponse, ApiNotFoundResponse, ApiQuery } from '@nestjs/swagger';
 
 import { ID, Quality } from './music.type';
-import { MusicResult, URLResult } from 'src/music/modules.type';
+import { MusicResult, URLResult, MusicsResult } from 'src/music/modules.type';
 import { MusicService } from './music.service';
 
 import { Response } from 'express';
@@ -59,5 +59,21 @@ export class MusicController {
             res.status(HttpStatus.NOT_FOUND);
             res.json(url);
         }
+    }
+
+    @Get('search')
+    @UseGuards(AuthGuard('jwt'))
+    @ApiQuery({ name: 'keyword', type: String })
+    @ApiQuery({ name: 'module', type: String })
+    @ApiResponse({
+        status: 200,
+        description: 'Found.',
+        type: MusicsResult
+    })
+    async searchMusic(@Query() query) {
+        const module: string = query.module;
+        const keyword: string = query.keyword;
+        const result = await this.musicService.searchMusic(module, keyword);
+        return result;
     }
 }
