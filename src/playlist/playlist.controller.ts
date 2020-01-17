@@ -82,4 +82,30 @@ export class PlaylistController {
         const result = await this.playlistService.delete(song, playlist);
         return result;
     }
+
+    @Get('favorite')
+    @UseGuards(AuthGuard('jwt'))
+    async getFavoritePlaylist(@Request() req) {
+        const result = await this.playlistService.getFavoritePlaylist(req.user.id);
+        return result;
+    }
+
+    @Delete('favorite')
+    @UseGuards(AuthGuard('jwt'))
+    async deleteFavoritePlaylist(@Body() body, @Request() req) {
+        const id: number = parseInt(body.id);
+        const result = await this.playlistService.deleteFavoritePlaylist(req.user.id, id);
+        return result;
+    }
+
+    @Post('favorite')
+    @UseGuards(AuthGuard('jwt'))
+    async addFavoritePlaylist(@Body() body, @Request() req) {
+        const id: ID = {
+            id: body.id,
+            module: body.module
+        };
+        const result = await this.playlistService.addFavoritePlaylist(req.user.id, id);
+        return result;
+    }
 }

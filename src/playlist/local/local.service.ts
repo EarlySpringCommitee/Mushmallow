@@ -19,7 +19,6 @@ import {
     PlaylistDeleteResult,
     PlaylistDeleteResultStatus
 } from '../modules.type';
-import { Playlist } from '../playlist.type';
 
 const MODULE_NAME = 'local';
 

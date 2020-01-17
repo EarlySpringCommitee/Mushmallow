@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import {
     PlaylistResult,
@@ -9,9 +11,16 @@ import {
     PlaylistCreateResultStatus,
     PlaylistCreateResult,
     PlaylistDeleteResult,
-    PlaylistDeleteResultStatus
+    PlaylistDeleteResultStatus,
+    FavoritePlaylistSaveResult,
+    FavoritePlaylistSaveResultStatus,
+    FavoritePlaylistDeleteResult,
+    FavoritePlaylistDeleteResultStatus,
+    FavoritePlaylistResult,
+    FavoritePlaylistResultStatus
 } from './modules.type';
-import { ID, Playlist } from './playlist.type';
+import { ID } from './playlist.type';
+import { FavoritePlaylist, InsertFavoritePlaylist } from './playlist.entity';
 
 /* Service */
 import { NeteaseService } from './netease/netease.service';
@@ -50,7 +59,12 @@ function initLocal() {
 export class PlaylistService implements IPlaylistService {
     public modules: ModuleList = {};
 
-    constructor(private readonly localService: LocalService) {
+    constructor(
+        private readonly localService: LocalService,
+
+        @InjectRepository(FavoritePlaylist)
+        private readonly favoritePlaylistRepository: Repository<FavoritePlaylist>
+    ) {
         /* Init Services */
         for (const f of [initNetease, initLocal]) {
             f.bind(this)();
@@ -145,5 +159,118 @@ export class PlaylistService implements IPlaylistService {
 
         const result = await module.deletePlaylist(id);
         return result;
+    }
+
+    async getFavoritePlaylist(creator: ID['id']): Promise<FavoritePlaylistResult> {
+        try {
+            const result = await this.favoritePlaylistRepository.find({ creator });
+            if (result) {
+                return {
+                    success: true,
+                    status: FavoritePlaylistResultStatus.OK,
+                    data: result.map(x => ({
+                        module: x.module,
+                        id: x.playlistId
+                    }))
+                };
+            } else {
+                throw new Error(FavoritePlaylistResultStatus.UNKNOWN_ERROR);
+            }
+        } catch (e) {
+            switch (e.message) {
+                case FavoritePlaylistSaveResultStatus.UNKNOWN_ERROR:
+                default:
+                    return {
+                        success: false,
+                        status: FavoritePlaylistResultStatus.UNKNOWN_ERROR
+                    };
+            }
+        }
+    }
+
+    async addFavoritePlaylist(creator: ID['id'], id: ID): Promise<FavoritePlaylistSaveResult> {
+        try {
+            if (!this.modules.hasOwnProperty(id.module)) {
+                throw new Error(FavoritePlaylistSaveResultStatus.MODULE_NOT_FOUND);
+            }
+
+            const favoritePlaylist = new InsertFavoritePlaylist();
+            favoritePlaylist.module = id.module;
+            favoritePlaylist.playlistId = id.id;
+            favoritePlaylist.creator = creator;
+
+            const result = await this.favoritePlaylistRepository.insert(favoritePlaylist);
+            if (result.identifiers.length) {
+                return {
+                    success: true,
+                    status: FavoritePlaylistSaveResultStatus.OK,
+                    id: result.identifiers[0].id
+                };
+            } else {
+                throw new Error(FavoritePlaylistSaveResultStatus.UNKNOWN_ERROR);
+            }
+        } catch (e) {
+            switch (e.message) {
+                case FavoritePlaylistSaveResultStatus.MODULE_NOT_FOUND:
+                    return {
+                        success: false,
+                        status: FavoritePlaylistSaveResultStatus.MODULE_NOT_FOUND
+                    };
+                    break;
+                case FavoritePlaylistSaveResultStatus.UNKNOWN_ERROR:
+                default:
+                    return {
+                        success: false,
+                        status: FavoritePlaylistSaveResultStatus.UNKNOWN_ERROR
+                    };
+            }
+        }
+    }
+
+    async deleteFavoritePlaylist(
+        creator: ID['id'],
+        id: number
+    ): Promise<FavoritePlaylistDeleteResult> {
+        try {
+            const record = await this.favoritePlaylistRepository.findOne({ id });
+            if (!record) {
+                throw new Error(FavoritePlaylistDeleteResultStatus.PLAYLIST_NOT_FOUND);
+            }
+            if (record.creator != creator) {
+                throw new Error(FavoritePlaylistDeleteResultStatus.UNAUTHORIZED);
+            }
+            const result = await this.favoritePlaylistRepository.delete({ id });
+            switch (result.affected) {
+                case 0:
+                    throw new Error(FavoritePlaylistDeleteResultStatus.PLAYLIST_NOT_FOUND);
+                    break;
+                case 1:
+                    return {
+                        success: true,
+                        status: FavoritePlaylistDeleteResultStatus.OK
+                    };
+                default:
+                    throw new Error(FavoritePlaylistDeleteResultStatus.UNKNOWN_ERROR);
+            }
+        } catch (e) {
+            switch (e.message) {
+                case FavoritePlaylistDeleteResultStatus.PLAYLIST_NOT_FOUND:
+                    return {
+                        success: false,
+                        status: FavoritePlaylistDeleteResultStatus.PLAYLIST_NOT_FOUND
+                    };
+                case FavoritePlaylistDeleteResultStatus.UNAUTHORIZED:
+                    return {
+                        success: false,
+                        status: FavoritePlaylistDeleteResultStatus.UNAUTHORIZED
+                    };
+                case FavoritePlaylistSaveResultStatus.UNKNOWN_ERROR:
+                default:
+                    return {
+                        success: false,
+                        status: FavoritePlaylistDeleteResultStatus.UNKNOWN_ERROR
+                    };
+            }
+        }
     }
 }

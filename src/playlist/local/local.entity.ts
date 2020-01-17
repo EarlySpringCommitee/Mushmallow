@@ -1,5 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, Timestamp } from 'typeorm';
-import { ID, Playlist } from '../playlist.type';
+import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from 'src/users/user.entity';
 import { Music } from 'src/music/music.type';
 

@@ -92,6 +92,53 @@ export class PlaylistDeleteResult {
     status: PlaylistDeleteResultStatus;
 }
 
+export enum FavoritePlaylistSaveResultStatus {
+    OK = 'OK',
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+    MODULE_NOT_FOUND = 'MODULE_NOT_FOUND'
+}
+export class FavoritePlaylistSaveResult {
+    @ApiProperty()
+    success: boolean;
+
+    @ApiProperty()
+    status: FavoritePlaylistSaveResultStatus;
+
+    @ApiProperty()
+    id?: number;
+}
+
+export enum FavoritePlaylistResultStatus {
+    OK = 'OK',
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR'
+}
+
+export class FavoritePlaylistResult {
+    @ApiProperty()
+    success: boolean;
+
+    @ApiProperty()
+    status: FavoritePlaylistResultStatus;
+
+    @ApiProperty()
+    data?: ID[];
+}
+
+export enum FavoritePlaylistDeleteResultStatus {
+    OK = 'OK',
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+    PLAYLIST_NOT_FOUND = 'PLAYLIST_NOT_FOUND',
+    UNAUTHORIZED = 'UNAUTHORIZED'
+}
+
+export class FavoritePlaylistDeleteResult {
+    @ApiProperty()
+    success: boolean;
+
+    @ApiProperty()
+    status: FavoritePlaylistDeleteResultStatus;
+}
+
 export interface IPlaylistService {
     getPlaylist: (id: ID) => Promise<PlaylistResult>;
     save?: (song: ID, playlist: ID) => Promise<PlaylistSaveResult>;

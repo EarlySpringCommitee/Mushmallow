@@ -12,6 +12,7 @@ import { PlaylistService } from './playlist/playlist.service';
 import { PlaylistModule } from './playlist/playlist.module';
 import { LocalModule } from './playlist/local/local.module';
 import { LocalPlaylist, LocalPlaylistData } from './playlist/local/local.entity';
+import { FavoritePlaylist } from './playlist/playlist.entity';
 
 @Module({
     imports: [
@@ -22,7 +23,7 @@ import { LocalPlaylist, LocalPlaylistData } from './playlist/local/local.entity'
             username: process.env.DB_USERNAME || 'root',
             password: process.env.DB_PASSWORD || 'root',
             database: process.env.DB_DATABASE || 'mushmallow',
-            entities: [User, LocalPlaylist, LocalPlaylistData],
+            entities: [User, FavoritePlaylist, LocalPlaylist, LocalPlaylistData],
             synchronize: true
         }),
         MusicModule,
@@ -33,6 +34,6 @@ import { LocalPlaylist, LocalPlaylistData } from './playlist/local/local.entity'
         PlaylistModule
     ],
     controllers: [AppController],
-    providers: [AppService, LyricService, PlaylistService]
+    providers: [AppService]
 })
 export class AppModule {}
