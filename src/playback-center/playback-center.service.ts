@@ -27,8 +27,6 @@ import {
     ResponseActionBodyStatus
 } from './playback-center.type';
 
-import { v4 as uuid } from 'uuid';
-
 @Injectable()
 @WebSocketGateway()
 export class PlaybackCenterService {
