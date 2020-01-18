@@ -60,14 +60,6 @@ export class ClientResultBody extends Client {
     success: boolean;
 }
 
-export class ClientResult {
-    constructor() {
-        this.event = PlaybackCenterEvents.REQUEST_CLIENT;
-    }
-    event: PlaybackCenterEvents;
-    data: ClientResultBody;
-}
-
 export class ResponseClientBody extends Client {
     requestor: string;
 }

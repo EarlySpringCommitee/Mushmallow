@@ -17,8 +17,6 @@ import {
     ClientsSingleBody,
     ClientsResult,
     RoomCreatedResult,
-    Client,
-    ClientResult,
     ClientResultBody,
     ClientNotFoundError,
     ResponseClientBody,
