@@ -1,12 +1,14 @@
 import { WsResponse } from '@nestjs/websockets';
-import { Music } from 'src/music/music.type';
+import { ID, Music } from 'src/music/music.type';
 
 export enum PlaybackCenterEvents {
     CLIENT_JOINED = 'clientJoined',
     CLIENTS = 'clients',
     REQUEST_CLIENT = 'requestClient',
     RESPONSE_CLIENT = 'responseClient',
-    CHECKIN = 'checkin'
+    CHECKIN = 'checkin',
+    REQUEST_ACTION = 'requestAction',
+    RESPONSE_ACTION = 'responseAction'
 }
 
 export enum ClientStatus {
@@ -75,4 +77,45 @@ export class ClientNotFoundError extends Error {
         super('Client not found');
         this.name = this.constructor.name;
     }
+}
+
+export enum ClientAction {
+    PLAY = 'PLAY',
+    PAUSE = 'PAUSE',
+    STOP = 'STOP',
+
+    NEXT = 'NEXT',
+    PREV = 'PREV',
+
+    INSERT = 'INSERT',
+    PUSH = 'PUSH',
+
+    PLAYLIST = 'PLAYLIST',
+
+    CLEAR = 'CLEAR'
+}
+
+export type InsertClientActionData = ID[];
+export type PushClientActionData = ID[];
+export type PlaylistClientActionData = ID[];
+
+export class RequestActionBody {
+    requestor: string;
+    target: string;
+    action: ClientAction;
+    id: string;
+    data?: InsertClientActionData | PushClientActionData | PlaylistClientActionData;
+}
+
+export enum ResponseActionBodyStatus {
+    OK = 'OK',
+    CLIENT_NOT_FOUND = 'CLIENT_NOT_FOUND',
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR'
+}
+
+export class ResponseActionBody {
+    success: boolean;
+    status: ResponseActionBodyStatus;
+    requestor: string;
+    id: string;
 }

@@ -21,8 +21,13 @@ import {
     ClientResult,
     ClientResultBody,
     ClientNotFoundError,
-    ResponseClientBody
+    ResponseClientBody,
+    RequestActionBody,
+    ResponseActionBody,
+    ResponseActionBodyStatus
 } from './playback-center.type';
+
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 @WebSocketGateway()
@@ -111,6 +116,41 @@ export class PlaybackCenterService {
             const targetId = body.requestor;
             const target = this.getClient(client, targetId);
             target.emit(PlaybackCenterEvents.RESPONSE_CLIENT, body);
+        } catch (e) {
+            if (e instanceof ClientNotFoundError) {
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    @SubscribeMessage(PlaybackCenterEvents.REQUEST_ACTION)
+    requestAction(@MessageBody() body: RequestActionBody, @ConnectedSocket() client: Socket) {
+        try {
+            const targetId = body.target;
+            const target = this.getClient(client, targetId);
+            target.emit(PlaybackCenterEvents.REQUEST_ACTION, body);
+        } catch (e) {
+            if (e instanceof ClientNotFoundError) {
+                const result = new ResponseActionBody();
+                result.success = false;
+                result.status = ResponseActionBodyStatus.CLIENT_NOT_FOUND;
+                result.id = body.id;
+                result.requestor = body.requestor;
+
+                client.emit(PlaybackCenterEvents.RESPONSE_ACTION, result);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    @SubscribeMessage(PlaybackCenterEvents.RESPONSE_ACTION)
+    resposeAction(@MessageBody() body: ResponseActionBody, @ConnectedSocket() client: Socket) {
+        try {
+            const targetId = body.requestor;
+            const target = this.getClient(client, targetId);
+            target.emit(PlaybackCenterEvents.RESPONSE_ACTION, body);
         } catch (e) {
             if (e instanceof ClientNotFoundError) {
             } else {
