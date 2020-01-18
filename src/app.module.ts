@@ -8,11 +8,11 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/user.entity';
 import { LyricService } from './lyric/lyric.service';
 import { LyricModule } from './lyric/lyric.module';
-import { PlaylistService } from './playlist/playlist.service';
 import { PlaylistModule } from './playlist/playlist.module';
 import { LocalModule } from './playlist/local/local.module';
 import { LocalPlaylist, LocalPlaylistData } from './playlist/local/local.entity';
 import { FavoritePlaylist } from './playlist/playlist.entity';
+import { PlaybackCenterModule } from './playback-center/playback-center.module';
 
 @Module({
     imports: [
@@ -31,7 +31,8 @@ import { FavoritePlaylist } from './playlist/playlist.entity';
         UsersModule,
         LyricModule,
         LocalModule,
-        PlaylistModule
+        PlaylistModule,
+        PlaybackCenterModule
     ],
     controllers: [AppController],
     providers: [AppService]

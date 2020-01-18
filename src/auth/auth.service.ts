@@ -14,6 +14,10 @@ export class AuthService {
         private readonly jwtService: JwtService
     ) {}
 
+    async verifyJwt(token: string, ...args: any[]) {
+        return await this.jwtService.verifyAsync(token, ...args);
+    }
+
     async validateUser(
         username: User['username'],
         inPassword: User['password']
