@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+    mushmallow:
+        build: .
+        restart: always
+        networks:
+            - mushmallow
+        env_file: .env
+    db:
+        image: mariadb:latest
+        restart: always
+        networks:
+            - mushmallow
+        environment:
+            MYSQL_USER: ${DB_USERNAME}
+            MYSQL_PASSWORD: ${DB_PASSWORD}
+            MYSQL_DATABASE: ${DB_DATABASE}
+        volumes:
+            - dbdata:/var/lib/mysql
+
+networks:
+    mushmallow:
+
+volumes:
+    dbdata:
