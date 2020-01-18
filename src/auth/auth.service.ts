@@ -19,7 +19,7 @@ export class AuthService {
         inPassword: User['password']
     ): Promise<PublicUser | null> {
         const user = await this.usersService.findOne(username);
-        if (user && user.password === inPassword) {
+        if (user && user.password === this.usersService.createPassword(inPassword)) {
             const { password, ...result } = user;
             return result;
         }
@@ -32,7 +32,9 @@ export class AuthService {
         newPassword: User['password']
     ): Promise<UpdateUserResult> {
         if (await this.validateUser(username, oldPassword)) {
-            const result = await this.usersService.update(username, { password: newPassword });
+            const result = await this.usersService.update(username, {
+                password: this.usersService.createPassword(newPassword)
+            });
             return { success: result };
         } else {
             return { success: false };
@@ -47,13 +49,14 @@ export class AuthService {
     }
 
     async createUser(user: InsertUser): Promise<CreateUserResult> {
-        const usernameExist: boolean = Boolean(await this.usersService.findOne(user.username));
+        const usernameExist: boolean = await this.isUsernameExist(user.username);
         if (usernameExist) {
             return {
                 success: false,
                 status: CreateUserResultStatus.USERNAME_EXIST
             };
         }
+        user.password = this.usersService.createPassword(user.password);
         const result = await this.usersService.create(user);
         if (result) {
             return {
