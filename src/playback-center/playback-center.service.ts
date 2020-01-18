@@ -2,7 +2,6 @@ import { Injectable, UseGuards, Request } from '@nestjs/common';
 import {
     WebSocketGateway,
     SubscribeMessage,
-    WsResponse,
     WebSocketServer,
     WsException,
     ConnectedSocket,
@@ -17,7 +16,12 @@ import {
     RoomCreatedSingleBody,
     ClientsSingleBody,
     ClientsResult,
-    RoomCreatedResult
+    RoomCreatedResult,
+    Client,
+    ClientResult,
+    ClientResultBody,
+    ClientNotFoundError,
+    ResponseClientBody
 } from './playback-center.type';
 
 @Injectable()
@@ -25,8 +29,13 @@ import {
 export class PlaybackCenterService {
     constructor(private readonly authService: AuthService) {}
 
-    @WebSocketServer()
-    server: Server;
+    private getClient(client: Socket, id: string): Socket {
+        const clients = client.server.clients().connected;
+        if (!(id in clients)) {
+            throw new ClientNotFoundError();
+        }
+        return clients[id];
+    }
 
     async handleConnection(client: Socket) {
         try {
@@ -64,7 +73,7 @@ export class PlaybackCenterService {
     }
 
     @SubscribeMessage(PlaybackCenterEvents.CLIENTS)
-    handleEvent(@MessageBody() body: string, @ConnectedSocket() client: Socket): ClientsResult {
+    clients(@ConnectedSocket() client: Socket): ClientsResult {
         const roomId = client.handshake.headers.user.id;
 
         const room = client.adapter.rooms[roomId];
@@ -76,5 +85,37 @@ export class PlaybackCenterService {
         response.data = respBody;
 
         return response;
+    }
+
+    @SubscribeMessage(PlaybackCenterEvents.REQUEST_CLIENT)
+    requestClient(@MessageBody() targetId: string, @ConnectedSocket() client: Socket) {
+        try {
+            const target = this.getClient(client, targetId);
+            target.emit(PlaybackCenterEvents.REQUEST_CLIENT, targetId);
+        } catch (e) {
+            if (e instanceof ClientNotFoundError) {
+                const result = new ClientResultBody();
+                result.success = false;
+                result.id = targetId;
+
+                client.emit(PlaybackCenterEvents.RESPONSE_CLIENT, result);
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    @SubscribeMessage(PlaybackCenterEvents.RESPONSE_CLIENT)
+    responseClient(@MessageBody() body: ResponseClientBody, @ConnectedSocket() client: Socket) {
+        try {
+            const targetId = body.requestor;
+            const target = this.getClient(client, targetId);
+            target.emit(PlaybackCenterEvents.RESPONSE_CLIENT, body);
+        } catch (e) {
+            if (e instanceof ClientNotFoundError) {
+            } else {
+                throw e;
+            }
+        }
     }
 }
