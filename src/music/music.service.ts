@@ -12,6 +12,7 @@ import { ID, Quality } from './music.type';
 
 /* Service */
 import { NeteaseService } from './netease/netease.service';
+import { YoutubeService } from './youtube/youtube.service';
 type Provider = NeteaseService;
 interface ModuleList {
     [moduleName: string]: Provider;
@@ -36,6 +37,12 @@ function initNetease() {
     }
 }
 
+function initYoutube() {
+    if (process.env.YOUTUBE_ENABLED === '1') {
+        this.modules.youtube = new YoutubeService(process.env.YOUTUBE_API_KEY);
+    }
+}
+
 @Injectable()
 export class MusicService implements IMusicService {
     public modules: ModuleList = {};
@@ -43,6 +50,7 @@ export class MusicService implements IMusicService {
     constructor() {
         /* Init Services */
         initNetease.bind(this)();
+        initYoutube.bind(this)();
     }
 
     async isMusicAvailable(id: ID): Promise<boolean> {

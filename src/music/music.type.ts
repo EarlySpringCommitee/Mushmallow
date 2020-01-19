@@ -42,6 +42,9 @@ export class Music {
 
     @ApiProperty()
     album?: Album;
+
+    @ApiProperty()
+    image?: string;
 }
 
 export enum Quality {

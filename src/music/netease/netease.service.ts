@@ -114,7 +114,8 @@ export class NeteaseService
             const result = (await rp(`${this.baseURL}/song/url?id=${id.id}&br=${br}`)).data[0];
             return {
                 success: result.url,
-                url: result.url.replace('http:', 'https:')
+                url: result.url.replace('http:', 'https:'),
+                status: MusicResultStatus.OK
             };
         } catch (e) {
             return {

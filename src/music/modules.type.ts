@@ -1,4 +1,5 @@
 import { Music, ID, Quality } from './music.type';
+export { Music, ID, Quality } from './music.type';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -15,7 +16,8 @@ export enum MusicResultStatus {
     OK = 'OK',
     MODULE_NOT_FOUND = 'MODULE_NOT_FOUND',
     MUSIC_NOT_AVAILABLE = 'MUSIC_NOT_AVAILABLE',
-    QUALITY_NOT_AVAILABLE = 'QUALITY_NOT_AVAILABLE'
+    QUALITY_NOT_AVAILABLE = 'QUALITY_NOT_AVAILABLE',
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR'
 }
 
 export class MusicResult {
@@ -24,9 +26,6 @@ export class MusicResult {
 
     @ApiProperty()
     music?: Music;
-
-    @ApiProperty()
-    message?: string;
 
     @ApiProperty()
     status: MusicResultStatus;
@@ -40,7 +39,7 @@ export class URLResult {
     url?: string;
 
     @ApiProperty()
-    status?: MusicResultStatus;
+    status: MusicResultStatus;
 }
 
 export enum MusicsResultStatus {
