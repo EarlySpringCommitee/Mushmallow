@@ -1,4 +1,4 @@
-import { Controller, Get, Query, Res, HttpStatus, UseGuards } from '@nestjs/common';
+import { Controller, Get, Query, Res, HttpStatus, UseGuards, Request } from '@nestjs/common';
 import { ApiResponse, ApiNotFoundResponse, ApiQuery } from '@nestjs/swagger';
 
 import { ID, Quality } from './music.type';
@@ -75,5 +75,11 @@ export class MusicController {
         const keyword: string = query.keyword;
         const result = await this.musicService.searchMusic(module, keyword);
         return result;
+    }
+
+    @Get('proxy')
+    @UseGuards(AuthGuard('jwt'))
+    async proxy(@Query() query, @Request() req, @Res() res: Response) {
+        return await this.musicService.proxy(query.module, query, req.headers, res);
     }
 }

@@ -8,8 +8,13 @@ export interface LoginResult {
     message?: any;
 }
 
-export interface ILoginService<LoginInfo> {
+export interface ILoginService<LoginInfo = BasicLoginInfo> {
     login: (info: LoginInfo) => Promise<LoginResult>;
+}
+
+export interface BasicLoginInfo {
+    username: string;
+    password: string;
 }
 
 export enum MusicResultStatus {

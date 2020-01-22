@@ -32,6 +32,7 @@
         "@types/request": "^2.48.4",
         "@types/request-promise-native": "^1.0.17",
         "googleapis": "^47.0.0",
+        "helmet": "^3.21.2",
         "mysql": "^2.17.1",
         "passport": "^0.4.1",
         "passport-jwt": "^4.0.0",
