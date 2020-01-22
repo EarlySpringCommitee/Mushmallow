@@ -279,7 +279,7 @@ export class DsmService implements ILoginService {
                 }
                 break;
             case 'song':
-                rp.get({
+                rpp.get({
                     url: `${this.dsmURL}/webapi/AudioStation/stream.cgi/0.mp3?api=SYNO.AudioStation.Stream&version=2&method=stream&id=${data.id}`,
                     headers: {
                         'User-Agent':
@@ -288,24 +288,7 @@ export class DsmService implements ILoginService {
                         Accept: headers.accept,
                         Host: new URL(this.dsmURL).host
                     }
-                })
-                    .on('response', function(response) {
-                        res.writeHead(206, {
-                            'Accept-Ranges': response.headers['accept-ranges']
-                                ? response.headers['accept-ranges']
-                                : '',
-                            'Content-Length': response.headers['content-length']
-                                ? response.headers['content-length']
-                                : '',
-                            'Content-Range': response.headers['content-range']
-                                ? response.headers['content-range']
-                                : '',
-                            'Content-Type': response.headers['content-type']
-                                ? response.headers['content-type']
-                                : ''
-                        });
-                    })
-                    .pipe(res);
+                }).pipe(res, { end: true });
         }
     }
 }
