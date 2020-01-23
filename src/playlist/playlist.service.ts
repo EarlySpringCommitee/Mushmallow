@@ -84,6 +84,25 @@ export class PlaylistService implements IPlaylistService {
         return result;
     }
 
+    async getAlbum(id: ID): Promise<PlaylistResult> {
+        if (!this.modules.hasOwnProperty(id.module)) {
+            return {
+                success: false,
+                status: PlaylistResultStatus.MODULE_NOT_FOUND
+            };
+        }
+
+        const module = this.modules[id.module];
+        if (typeof module['getAlbum'] !== 'function') {
+            return {
+                success: false,
+                status: PlaylistResultStatus.MODULE_NOT_SUPPORTED
+            };
+        }
+        const result = await module.getAlbum(id);
+        return result;
+    }
+
     async save(song: ID, playlist: ID): Promise<PlaylistSaveResult> {
         if (!this.modules.hasOwnProperty(playlist.module)) {
             return {
@@ -93,7 +112,7 @@ export class PlaylistService implements IPlaylistService {
         }
 
         const module = this.modules[playlist.module];
-        if (typeof module.save !== 'function') {
+        if (typeof module['save'] !== 'function') {
             return {
                 success: false,
                 status: PlaylistSaveResultStatus.PLAYLIST_NOT_SUPPORTED
@@ -111,7 +130,7 @@ export class PlaylistService implements IPlaylistService {
             };
         }
         const module = this.modules[playlist.module];
-        if (typeof module.delete !== 'function') {
+        if (typeof module['delete'] !== 'function') {
             return {
                 success: false,
                 status: PlaylistSaveResultStatus.PLAYLIST_NOT_SUPPORTED
@@ -130,7 +149,7 @@ export class PlaylistService implements IPlaylistService {
         }
 
         const module = this.modules[playlist.module];
-        if (typeof module.createPlaylist !== 'function') {
+        if (typeof module['createPlaylist'] !== 'function') {
             return {
                 success: false,
                 status: PlaylistCreateResultStatus.MODULE_NOT_SUPPORTED
@@ -150,7 +169,7 @@ export class PlaylistService implements IPlaylistService {
         }
 
         const module = this.modules[id.module];
-        if (typeof module.deletePlaylist !== 'function') {
+        if (typeof module['deletePlaylist'] !== 'function') {
             return {
                 success: false,
                 status: PlaylistDeleteResultStatus.MODULE_NOT_SUPPORTED

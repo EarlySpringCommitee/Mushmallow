@@ -20,6 +20,12 @@ export class LocalPlaylist {
 
     @Column()
     name: string;
+
+    @Column()
+    image?: string;
+
+    @Column()
+    description?: string;
 }
 
 @Entity()
@@ -53,6 +59,8 @@ export class InsertLocalPlaylist {
     creator: LocalPlaylist['creator'];
 
     name: LocalPlaylist['name'];
+
+    image: LocalPlaylist['image'];
 }
 
 export class InsertLocalPlaylistData {

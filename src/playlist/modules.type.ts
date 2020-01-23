@@ -9,7 +9,8 @@ export enum PlaylistResultStatus {
     OK = 'OK',
     PLAYLIST_NOT_FOUND = 'PLAYLIST_NOT_FOUND',
     MODULE_NOT_FOUND = 'MODULE_NOT_FOUND',
-    UNKNOWN_ERROR = 'UNKNOWN_ERROR'
+    UNKNOWN_ERROR = 'UNKNOWN_ERROR',
+    MODULE_NOT_SUPPORTED = 'MODULE_NOT_SUPPORTED'
 }
 
 export class PlaylistResult {
@@ -146,4 +147,5 @@ export interface IPlaylistService {
     getPlaylists?: (option: any) => Promise<PlaylistsResult>;
     createPlaylist?: (data: any) => Promise<PlaylistCreateResult>;
     deletePlaylist?: (id: ID) => Promise<PlaylistDeleteResult>;
+    getAlbum?: (id: ID) => Promise<PlaylistResult>;
 }

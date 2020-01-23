@@ -213,7 +213,9 @@ export class LocalService implements IPlaylistService {
             const playlist = {
                 name: localPlaylist.name,
                 module: MODULE_NAME,
-                data
+                data,
+                image: localPlaylist.image,
+                description: localPlaylist.description
             };
             return {
                 success: true,

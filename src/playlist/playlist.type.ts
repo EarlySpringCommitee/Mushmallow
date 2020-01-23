@@ -5,4 +5,6 @@ export class Playlist {
     name: string;
     module: string;
     data: ID[];
+    image?: string;
+    description?: string;
 }

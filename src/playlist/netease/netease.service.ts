@@ -73,7 +73,36 @@ export class NeteaseService
                 playlist: {
                     module: MODULE_NAME,
                     data: IDs,
-                    name: playlist.playlist.name
+                    name: playlist.playlist.name,
+                    image: playlist.playlist.coverImgUrl
+                },
+                status: PlaylistResultStatus.OK
+            };
+        } catch (e) {
+            return {
+                success: false,
+                status: PlaylistResultStatus.PLAYLIST_NOT_FOUND
+            };
+        }
+    }
+
+    async getAlbum(id: ID): Promise<PlaylistResult> {
+        try {
+            const album = await rp(`${this.baseURL}/album?id=${id.id}`);
+            const IDs: ID[] = album.songs.map(
+                (x: any): ID => ({
+                    module: MODULE_NAME,
+                    id: x.id
+                })
+            );
+            return {
+                success: true,
+                playlist: {
+                    module: MODULE_NAME,
+                    data: IDs,
+                    name: album.album.name,
+                    image: album.album.blurPicUrl,
+                    description: album.album.description
                 },
                 status: PlaylistResultStatus.OK
             };

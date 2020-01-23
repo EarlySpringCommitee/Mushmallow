@@ -43,6 +43,29 @@ export class PlaylistController {
         return playlist;
     }
 
+    @Get('album')
+    @UseGuards(AuthGuard('jwt'))
+    @ApiQuery({ name: 'module', type: String })
+    @ApiQuery({ name: 'id', type: String })
+    @ApiResponse({
+        status: 200,
+        description: 'Found.',
+        type: PlaylistResult
+    })
+    @ApiNotFoundResponse({
+        description: 'Not found.',
+        type: PlaylistResult
+    })
+    async getAlbum(@Query() query) {
+        const id: ID = {
+            module: query.module,
+            id: query.id
+        };
+
+        const playlist = await this.playlistService.getAlbum(id);
+        return playlist;
+    }
+
     @Post()
     @UseGuards(AuthGuard('jwt'))
     async createPlaylist(@Body() body, @Request() req) {
